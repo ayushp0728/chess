@@ -1,4 +1,4 @@
-#welcome to chess
+# welcome to chess
 
 ### use this command to compile classes without cluttering chess folder
 
