@@ -6,5 +6,5 @@ javac -d bin chess/*.java
 
 ### use this command to run playchess
 
-java chess.PlayChess 
+java -cp bin chess.PlayChess
 
