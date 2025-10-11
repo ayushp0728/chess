@@ -1,8 +1,10 @@
-use this command to compile classes without cluttering chess folder
+#welcome to chess
 
-** javac -d bin chess/*.java ** 
+### use this command to compile classes without cluttering chess folder
 
-use this command to run playchess
+javac -d bin chess/*.java
 
-** java chess.PlayChess ** 
+### use this command to run playchess
+
+java chess.PlayChess 
 
