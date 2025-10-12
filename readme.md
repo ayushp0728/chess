@@ -8,3 +8,7 @@ javac -d bin chess/*.java
 
 java -cp bin chess.PlayChess
 
+
+## Vedanti changes
+- in Board.makeMove(), implemented all basic moves for all piece types
+
