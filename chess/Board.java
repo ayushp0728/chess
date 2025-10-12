@@ -68,6 +68,24 @@ public class Board {
             grid[fromRow][fromCol] = null;
             return true;
         }
+        else if (piece == ReturnPiece.PieceType.WP &&
+            toCol == fromCol && fromRow == 6 && toRow == fromRow - 2 && grid[toRow][toCol] == null) {
+            grid[toRow][toCol] = piece;
+            grid[fromRow][fromCol] = null;
+            return true;
+        }
+        else if (
+            piece == ReturnPiece.PieceType.WP &&
+            (toCol == fromCol + 1 || toCol == fromCol - 1) &&
+            toRow == fromRow - 1 &&
+            grid[toRow][toCol] != null &&
+            grid[toRow][toCol].name().charAt(0) == 'B'
+        ) {
+            grid[toRow][toCol] = piece;
+            grid[fromRow][fromCol] = null;
+            return true;
+        }
+
 
         if (piece == ReturnPiece.PieceType.BP &&
             toCol == fromCol && toRow == fromRow + 1 && grid[toRow][toCol] == null) {
@@ -75,9 +93,204 @@ public class Board {
             grid[fromRow][fromCol] = null;
             return true;
         }
+        else if (piece == ReturnPiece.PieceType.BP &&
+            toCol == fromCol && fromRow == 1 && toRow == fromRow + 2 && grid[toRow][toCol] == null) {
+            grid[toRow][toCol] = piece;
+            grid[fromRow][fromCol] = null;
+            return true;
+        }
+        else if (
+            piece == ReturnPiece.PieceType.BP &&
+            (toCol == fromCol + 1 || toCol == fromCol - 1) &&
+            toRow == fromRow + 1 &&
+            grid[toRow][toCol] != null &&
+            grid[toRow][toCol].name().charAt(0) == 'W'
+        ) {
+            grid[toRow][toCol] = piece;
+            grid[fromRow][fromCol] = null;
+            return true;
+        }
+
+        //Rook moves
+        if (piece == ReturnPiece.PieceType.WR || piece == ReturnPiece.PieceType.BR) {
+            if (fromRow == toRow) {
+                int step;
+
+                if (toCol > fromCol) {
+                    step = 1;
+                } else {
+                    step = -1;
+                }
+
+                for (int c = fromCol + step; c != toCol; c += step) {
+                    if (grid[fromRow][c] != null) return false;
+                }
+                if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
+                    grid[toRow][toCol] = piece;
+                    grid[fromRow][fromCol] = null;
+                    return true;
+                }
+            } else if (fromCol == toCol) {
+                int step;
+                if(toRow > fromRow){
+                    step = 1;
+                }
+                else{
+                    step = -1;
+                }
+
+                for (int r = fromRow + step; r != toRow; r += step) {
+                    if (grid[r][fromCol] != null) return false;
+                }
+                if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
+                    grid[toRow][toCol] = piece;
+                    grid[fromRow][fromCol] = null;
+                    return true;
+                }
+            }
+        }
+
+        // Bishop moves
+        if (piece == ReturnPiece.PieceType.WB || piece == ReturnPiece.PieceType.BB) {
+            int rn = toRow - fromRow;
+            int cn = toCol - fromCol;
+
+
+            if (Math.abs(rn) != Math.abs(cn)) {
+                return false;
+            }
+
+
+            int rstep = (toRow > fromRow) ? 1 : -1;
+            int cstep = (toCol > fromCol) ? 1 : -1;
+
+
+            int r = fromRow + rstep;
+            int c = fromCol + cstep;
+            while (r != toRow && c != toCol) {
+                if (grid[r][c] != null) {
+                    return false; 
+                }
+                r += rstep;
+                c += cstep;
+            }
+
+
+            if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
+                grid[toRow][toCol] = piece;
+                grid[fromRow][fromCol] = null;
+                return true;
+            }
+        }
+
+        //Knight moves
+        if (piece == ReturnPiece.PieceType.WN || piece == ReturnPiece.PieceType.BN) {
+            int rn = toRow - fromRow;
+            int cn = toCol - fromCol;
+
+
+            if (!(Math.abs(rn) == 1 && Math.abs(cn) == 2 || Math.abs(rn) == 2 && Math.abs(cn) == 1)) {
+                return false;
+            }
+
+            if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
+                grid[toRow][toCol] = piece;
+                grid[fromRow][fromCol] = null;
+                return true;
+            }
+        }
+
+        //King moves
+        if (piece == ReturnPiece.PieceType.WK || piece == ReturnPiece.PieceType.BK) {
+            int rn = toRow - fromRow;
+            int cn = toCol - fromCol;
+
+
+            if (!((Math.abs(rn) == 0 || Math.abs(rn) == 1) && 
+                (Math.abs(cn) == 0 || Math.abs(cn) == 1))) {
+                return false;
+            }
+
+
+            if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
+                grid[toRow][toCol] = piece;
+                grid[fromRow][fromCol] = null;
+                return true;
+            }
+        }
+
+        //Queen moves
+        if (piece == ReturnPiece.PieceType.WQ || piece == ReturnPiece.PieceType.BQ) {
+            int rn = toRow - fromRow;
+            int cn = toCol - fromCol;
+
+            if (fromRow == toRow) {
+                int step;
+
+                if (toCol > fromCol) {
+                    step = 1;
+                } else {
+                    step = -1;
+                }
+
+                for (int c = fromCol + step; c != toCol; c += step) {
+                    if (grid[fromRow][c] != null) return false;
+                }
+                if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
+                    grid[toRow][toCol] = piece;
+                    grid[fromRow][fromCol] = null;
+                    return true;
+                }
+            } else if (fromCol == toCol) {
+                int step;
+                if(toRow > fromRow){
+                    step = 1;
+                }
+                else{
+                    step = -1;
+                }
+
+                for (int r = fromRow + step; r != toRow; r += step) {
+                    if (grid[r][fromCol] != null) return false;
+                }
+                if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
+                    grid[toRow][toCol] = piece;
+                    grid[fromRow][fromCol] = null;
+                    return true;
+                }
+            }
+            else{
+                if (Math.abs(rn) != Math.abs(cn)) {
+                    return false;
+                }
+                int rstep = (toRow > fromRow) ? 1 : -1;
+                int cstep = (toCol > fromCol) ? 1 : -1;
+
+
+                int r = fromRow + rstep;
+                int c = fromCol + cstep;
+                while (r != toRow && c != toCol) {
+                    if (grid[r][c] != null) {
+                        return false; 
+                    }
+                    r += rstep;
+                    c += cstep;
+                }
+
+
+                if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
+                    grid[toRow][toCol] = piece;
+                    grid[fromRow][fromCol] = null;
+                    return true;
+                }
+            }
+     
+        }
 
         return false;
-        //comment
+
+
+        
     }
 
     public ArrayList<ReturnPiece> getPieces() {
