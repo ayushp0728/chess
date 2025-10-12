@@ -6,37 +6,40 @@ import java.util.Scanner;
 public class PlayChess {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		Scanner sc = new Scanner(System.in);
 		Chess.start();
 		
-		String line = sc.nextLine();
-		while (!line.equals("quit")) {
+		// Print the initial board
+		printBoard(Chess.getBoardState());
+		System.out.println();
+
+		while (true) {
+			System.out.println("Player " + Chess.getCurrentPlayer() + "'s turn:");
+			String line = sc.nextLine();
+
+			if (line.equals("quit")) break;
+
 			if (line.equals("reset")) {
 				Chess.start();
 				System.out.println();
-				line = sc.nextLine();
+				printBoard(Chess.getBoardState());
 				continue;
 			}
-			// move 
+
 			ReturnPlay res = Chess.play(line);
-			
-			// print result message
+
 			if (res.message != null) {
-				System.out.println("\n"+res.message);
+				System.out.println("\n" + res.message);
 			}
 			System.out.println();
-			
-			// print result board
+
 			printBoard(res.piecesOnBoard);
 			System.out.println();
-			
-			// next line
-			line = sc.nextLine();
 		}
-		
+
 		sc.close();
 	}
+
 	
 	static void printBoard(ArrayList<ReturnPiece> pieces) {
 		String[][] board = makeBlankBoard();

@@ -27,6 +27,7 @@ public class Chess {
         } else {
             result.message = null;
             currentPlayer = (currentPlayer == Player.WHITE) ? Player.BLACK : Player.WHITE;
+
         }
 
         return result;
@@ -35,4 +36,9 @@ public class Chess {
     public static ArrayList<ReturnPiece> getBoardState() {
         return board.getPieces();
     }
+
+    public static Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
 }
