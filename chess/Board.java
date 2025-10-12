@@ -39,7 +39,7 @@ public class Board {
         grid[0][4] = ReturnPiece.PieceType.BK;
     }
 
-        public boolean makeMove(Move move, Chess.Player currentPlayer) {
+    public boolean makeMove(Move move, Chess.Player currentPlayer) {
         int fromCol = Character.toLowerCase(move.fromFile) - 'a'; // ensure lowercase
         int toCol = Character.toLowerCase(move.toFile) - 'a';
 
@@ -77,6 +77,7 @@ public class Board {
         }
 
         return false;
+        //comment
     }
 
     public ArrayList<ReturnPiece> getPieces() {
