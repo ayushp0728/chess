@@ -17,8 +17,28 @@ public class Chess {
 
     public static ReturnPlay play(String moveStr) {
         ReturnPlay result = new ReturnPlay();
+
+        //handle resign
+        if (moveStr.equals("resign")){
+            if (currentPlayer == Player.WHITE){
+                result.message = ReturnPlay.Message.RESIGN_BLACK_WINS;
+            }
+            else{
+                result.message = ReturnPlay.Message.RESIGN_WHITE_WINS;
+            }
+            return result;
+            
+        }
+
         Move move = new Move(moveStr);
 
+        //handle draw
+        if ("draw?".equals(move.special)){
+            result.message = ReturnPlay.Message.DRAW;
+            return result;
+        }
+        
+        //if not draw or resign, handle move
         boolean success = board.makeMove(move, currentPlayer);
         result.piecesOnBoard = board.getPieces();
 

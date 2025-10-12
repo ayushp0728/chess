@@ -40,6 +40,13 @@ public class Board {
     }
 
     public boolean makeMove(Move move, Chess.Player currentPlayer) {
+
+        //check for invalid 3rd arg (draw already accounted for in Chess.play)
+        if(move.special != null){
+            return false;
+        }
+
+
         int fromCol = Character.toLowerCase(move.fromFile) - 'a'; // ensure lowercase
         int toCol = Character.toLowerCase(move.toFile) - 'a';
 
@@ -60,7 +67,71 @@ public class Board {
         if ((isWhite && currentPlayer != Chess.Player.WHITE) ||
             (!isWhite && currentPlayer != Chess.Player.BLACK))
             return false;
+        
+        // Pawn Promotion move handling
+        if (piece == ReturnPiece.PieceType.WP &&
+            (toRow == 0) &&
+            ((toCol == fromCol && grid[toRow][toCol] == null) ||
+            (Math.abs(toCol - fromCol) == 1 && grid[toRow][toCol] != null &&
+            grid[toRow][toCol].name().charAt(0) == 'B'))){
 
+                if(move.promotion == 'N'){
+                    piece = ReturnPiece.PieceType.WN;
+                    grid[toRow][toCol] = piece;
+                    grid[fromRow][fromCol] = null;
+                    return true;
+                }
+                else if (move.promotion == 'R'){
+                    piece = ReturnPiece.PieceType.WR;
+                    grid[toRow][toCol] = piece;
+                    grid[fromRow][fromCol] = null;
+                    return true;
+                }
+                else if (move.promotion == 'B'){
+                    piece = ReturnPiece.PieceType.WB;
+                    grid[toRow][toCol] = piece;
+                    grid[fromRow][fromCol] = null;
+                    return true;
+                }
+                else{
+                    piece = ReturnPiece.PieceType.WQ;
+                    grid[toRow][toCol] = piece;
+                    grid[fromRow][fromCol] = null;
+                    return true;
+                }
+        }
+        if (piece == ReturnPiece.PieceType.BP &&
+            (toRow == 7) &&
+            ((toCol == fromCol && grid[toRow][toCol] == null) ||
+            (Math.abs(toCol - fromCol) == 1 && grid[toRow][toCol] != null &&
+            grid[toRow][toCol].name().charAt(0) == 'W'))){
+                if(move.promotion == 'N'){
+                    piece = ReturnPiece.PieceType.BN;
+                    grid[toRow][toCol] = piece;
+                    grid[fromRow][fromCol] = null;
+                    return true;
+                }
+                else if (move.promotion == 'R'){
+                    piece = ReturnPiece.PieceType.BR;
+                    grid[toRow][toCol] = piece;
+                    grid[fromRow][fromCol] = null;
+                    return true;
+                }
+                else if (move.promotion == 'B'){
+                    piece = ReturnPiece.PieceType.BB;
+                    grid[toRow][toCol] = piece;
+                    grid[fromRow][fromCol] = null;
+                    return true;
+                }
+                else{
+                    piece = ReturnPiece.PieceType.BQ;
+                    grid[toRow][toCol] = piece;
+                    grid[fromRow][fromCol] = null;
+                    return true;
+                }
+        }
+
+    
         // Basic pawn moves
         if (piece == ReturnPiece.PieceType.WP &&
             toCol == fromCol && toRow == fromRow - 1 && grid[toRow][toCol] == null) {
@@ -69,7 +140,7 @@ public class Board {
             return true;
         }
         else if (piece == ReturnPiece.PieceType.WP &&
-            toCol == fromCol && fromRow == 6 && toRow == fromRow - 2 && grid[toRow][toCol] == null) {
+            toCol == fromCol && fromRow == 6 && toRow == fromRow - 2 && grid[fromRow - 1][fromCol] == null && grid[toRow][toCol] == null) {
             grid[toRow][toCol] = piece;
             grid[fromRow][fromCol] = null;
             return true;
@@ -94,7 +165,7 @@ public class Board {
             return true;
         }
         else if (piece == ReturnPiece.PieceType.BP &&
-            toCol == fromCol && fromRow == 1 && toRow == fromRow + 2 && grid[toRow][toCol] == null) {
+            toCol == fromCol && fromRow == 1 && toRow == fromRow + 2 && grid[fromRow + 1][fromCol] == null && grid[toRow][toCol] == null) {
             grid[toRow][toCol] = piece;
             grid[fromRow][fromCol] = null;
             return true;
@@ -167,13 +238,12 @@ public class Board {
 
             int r = fromRow + rstep;
             int c = fromCol + cstep;
-            while (r != toRow && c != toCol) {
-                if (grid[r][c] != null) {
-                    return false; 
-                }
+            while (r != toRow) {
+                if (grid[r][c] != null) return false;
                 r += rstep;
                 c += cstep;
             }
+
 
 
             if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
@@ -205,6 +275,7 @@ public class Board {
             int rn = toRow - fromRow;
             int cn = toCol - fromCol;
 
+            if (rn == 0 && cn == 0) return false;
 
             if (!((Math.abs(rn) == 0 || Math.abs(rn) == 1) && 
                 (Math.abs(cn) == 0 || Math.abs(cn) == 1))) {
@@ -269,13 +340,12 @@ public class Board {
 
                 int r = fromRow + rstep;
                 int c = fromCol + cstep;
-                while (r != toRow && c != toCol) {
-                    if (grid[r][c] != null) {
-                        return false; 
-                    }
+                while (r != toRow) {
+                    if (grid[r][c] != null) return false;
                     r += rstep;
                     c += cstep;
                 }
+
 
 
                 if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
@@ -288,9 +358,7 @@ public class Board {
         }
 
         return false;
-
-
-        
+      
     }
 
     public ArrayList<ReturnPiece> getPieces() {
