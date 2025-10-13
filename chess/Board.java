@@ -1,373 +1,90 @@
 package chess;
 
 import java.util.ArrayList;
+import chess.pieces.*;
 
 public class Board {
-    private ReturnPiece.PieceType[][] grid = new ReturnPiece.PieceType[8][8];
+    private Piece[][] grid = new Piece[8][8];
 
     public void initialize() {
-        for (int r = 0; r < 8; r++) {
-            for (int c = 0; c < 8; c++) {
+        // Clear the board
+        for (int r = 0; r < 8; r++)
+            for (int c = 0; c < 8; c++)
                 grid[r][c] = null;
-            }
-        }
 
-        // Place pawns
+        // Pawns
         for (int c = 0; c < 8; c++) {
-            grid[6][c] = ReturnPiece.PieceType.WP;
-            grid[1][c] = ReturnPiece.PieceType.BP;
+            grid[6][c] = new Pawn(true);
+            grid[1][c] = new Pawn(false);
         }
 
         // Rooks
-        grid[7][0] = ReturnPiece.PieceType.WR; grid[7][7] = ReturnPiece.PieceType.WR;
-        grid[0][0] = ReturnPiece.PieceType.BR; grid[0][7] = ReturnPiece.PieceType.BR;
+        grid[7][0] = new Rook(true); grid[7][7] = new Rook(true);
+        grid[0][0] = new Rook(false); grid[0][7] = new Rook(false);
 
         // Knights
-        grid[7][1] = ReturnPiece.PieceType.WN; grid[7][6] = ReturnPiece.PieceType.WN;
-        grid[0][1] = ReturnPiece.PieceType.BN; grid[0][6] = ReturnPiece.PieceType.BN;
+        grid[7][1] = new Knight(true); grid[7][6] = new Knight(true);
+        grid[0][1] = new Knight(false); grid[0][6] = new Knight(false);
 
         // Bishops
-        grid[7][2] = ReturnPiece.PieceType.WB; grid[7][5] = ReturnPiece.PieceType.WB;
-        grid[0][2] = ReturnPiece.PieceType.BB; grid[0][5] = ReturnPiece.PieceType.BB;
+        grid[7][2] = new Bishop(true); grid[7][5] = new Bishop(true);
+        grid[0][2] = new Bishop(false); grid[0][5] = new Bishop(false);
 
         // Queens
-        grid[7][3] = ReturnPiece.PieceType.WQ;
-        grid[0][3] = ReturnPiece.PieceType.BQ;
+        grid[7][3] = new Queen(true); grid[0][3] = new Queen(false);
 
         // Kings
-        grid[7][4] = ReturnPiece.PieceType.WK;
-        grid[0][4] = ReturnPiece.PieceType.BK;
+        grid[7][4] = new King(true); grid[0][4] = new King(false);
     }
 
     public boolean makeMove(Move move, Chess.Player currentPlayer) {
+        if (move.special != null) return false; // draw already handled
 
-        //check for invalid 3rd arg (draw already accounted for in Chess.play)
-        if(move.special != null){
-            return false;
-        }
-
-
-        int fromCol = Character.toLowerCase(move.fromFile) - 'a'; // ensure lowercase
+        int fromCol = Character.toLowerCase(move.fromFile) - 'a';
         int toCol = Character.toLowerCase(move.toFile) - 'a';
-
         int fromRow = 8 - move.fromRank;
         int toRow = 8 - move.toRank;
 
-        // ✅ Bounds check
+        // Bounds check
         if (fromRow < 0 || fromRow > 7 || toRow < 0 || toRow > 7 ||
-            fromCol < 0 || fromCol > 7 || toCol < 0 || toCol > 7) {
-            System.out.println("Move out of bounds: " + move);
+            fromCol < 0 || fromCol > 7 || toCol < 0 || toCol > 7)
             return false;
-        }
 
-        ReturnPiece.PieceType piece = grid[fromRow][fromCol];
+        Piece piece = getPieceAt(fromRow, fromCol);
         if (piece == null) return false;
 
-        boolean isWhite = piece.name().charAt(0) == 'W';
-        if ((isWhite && currentPlayer != Chess.Player.WHITE) ||
-            (!isWhite && currentPlayer != Chess.Player.BLACK))
+        // Ensure correct player
+        if ((piece.isWhite() && currentPlayer != Chess.Player.WHITE) ||
+            (!piece.isWhite() && currentPlayer != Chess.Player.BLACK))
             return false;
-        
-        // Pawn Promotion move handling
-        if (piece == ReturnPiece.PieceType.WP &&
-            (toRow == 0) &&
-            ((toCol == fromCol && grid[toRow][toCol] == null) ||
-            (Math.abs(toCol - fromCol) == 1 && grid[toRow][toCol] != null &&
-            grid[toRow][toCol].name().charAt(0) == 'B'))){
 
-                if(move.promotion == 'N'){
-                    piece = ReturnPiece.PieceType.WN;
-                    grid[toRow][toCol] = piece;
-                    grid[fromRow][fromCol] = null;
-                    return true;
-                }
-                else if (move.promotion == 'R'){
-                    piece = ReturnPiece.PieceType.WR;
-                    grid[toRow][toCol] = piece;
-                    grid[fromRow][fromCol] = null;
-                    return true;
-                }
-                else if (move.promotion == 'B'){
-                    piece = ReturnPiece.PieceType.WB;
-                    grid[toRow][toCol] = piece;
-                    grid[fromRow][fromCol] = null;
-                    return true;
-                }
-                else{
-                    piece = ReturnPiece.PieceType.WQ;
-                    grid[toRow][toCol] = piece;
-                    grid[fromRow][fromCol] = null;
-                    return true;
-                }
-        }
-        if (piece == ReturnPiece.PieceType.BP &&
-            (toRow == 7) &&
-            ((toCol == fromCol && grid[toRow][toCol] == null) ||
-            (Math.abs(toCol - fromCol) == 1 && grid[toRow][toCol] != null &&
-            grid[toRow][toCol].name().charAt(0) == 'W'))){
-                if(move.promotion == 'N'){
-                    piece = ReturnPiece.PieceType.BN;
-                    grid[toRow][toCol] = piece;
-                    grid[fromRow][fromCol] = null;
-                    return true;
-                }
-                else if (move.promotion == 'R'){
-                    piece = ReturnPiece.PieceType.BR;
-                    grid[toRow][toCol] = piece;
-                    grid[fromRow][fromCol] = null;
-                    return true;
-                }
-                else if (move.promotion == 'B'){
-                    piece = ReturnPiece.PieceType.BB;
-                    grid[toRow][toCol] = piece;
-                    grid[fromRow][fromCol] = null;
-                    return true;
-                }
-                else{
-                    piece = ReturnPiece.PieceType.BQ;
-                    grid[toRow][toCol] = piece;
-                    grid[fromRow][fromCol] = null;
-                    return true;
-                }
+        // Move piece, pass promotion choice if pawn
+        boolean moved;
+        if (piece instanceof Pawn) {
+            moved = ((Pawn) piece).move(this, fromRow, fromCol, toRow, toCol, move.promotion);
+        } else {
+            moved = piece.move(this, fromRow, fromCol, toRow, toCol);
         }
 
-    
-        // Basic pawn moves
-        if (piece == ReturnPiece.PieceType.WP &&
-            toCol == fromCol && toRow == fromRow - 1 && grid[toRow][toCol] == null) {
-            grid[toRow][toCol] = piece;
-            grid[fromRow][fromCol] = null;
-            return true;
-        }
-        else if (piece == ReturnPiece.PieceType.WP &&
-            toCol == fromCol && fromRow == 6 && toRow == fromRow - 2 && grid[fromRow - 1][fromCol] == null && grid[toRow][toCol] == null) {
-            grid[toRow][toCol] = piece;
-            grid[fromRow][fromCol] = null;
-            return true;
-        }
-        else if (
-            piece == ReturnPiece.PieceType.WP &&
-            (toCol == fromCol + 1 || toCol == fromCol - 1) &&
-            toRow == fromRow - 1 &&
-            grid[toRow][toCol] != null &&
-            grid[toRow][toCol].name().charAt(0) == 'B'
-        ) {
-            grid[toRow][toCol] = piece;
-            grid[fromRow][fromCol] = null;
-            return true;
-        }
+        return moved;
+    }
 
+    public Piece getPieceAt(int row, int col) {
+        return grid[row][col];
+    }
 
-        if (piece == ReturnPiece.PieceType.BP &&
-            toCol == fromCol && toRow == fromRow + 1 && grid[toRow][toCol] == null) {
-            grid[toRow][toCol] = piece;
-            grid[fromRow][fromCol] = null;
-            return true;
-        }
-        else if (piece == ReturnPiece.PieceType.BP &&
-            toCol == fromCol && fromRow == 1 && toRow == fromRow + 2 && grid[fromRow + 1][fromCol] == null && grid[toRow][toCol] == null) {
-            grid[toRow][toCol] = piece;
-            grid[fromRow][fromCol] = null;
-            return true;
-        }
-        else if (
-            piece == ReturnPiece.PieceType.BP &&
-            (toCol == fromCol + 1 || toCol == fromCol - 1) &&
-            toRow == fromRow + 1 &&
-            grid[toRow][toCol] != null &&
-            grid[toRow][toCol].name().charAt(0) == 'W'
-        ) {
-            grid[toRow][toCol] = piece;
-            grid[fromRow][fromCol] = null;
-            return true;
-        }
-
-        //Rook moves
-        if (piece == ReturnPiece.PieceType.WR || piece == ReturnPiece.PieceType.BR) {
-            if (fromRow == toRow) {
-                int step;
-
-                if (toCol > fromCol) {
-                    step = 1;
-                } else {
-                    step = -1;
-                }
-
-                for (int c = fromCol + step; c != toCol; c += step) {
-                    if (grid[fromRow][c] != null) return false;
-                }
-                if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
-                    grid[toRow][toCol] = piece;
-                    grid[fromRow][fromCol] = null;
-                    return true;
-                }
-            } else if (fromCol == toCol) {
-                int step;
-                if(toRow > fromRow){
-                    step = 1;
-                }
-                else{
-                    step = -1;
-                }
-
-                for (int r = fromRow + step; r != toRow; r += step) {
-                    if (grid[r][fromCol] != null) return false;
-                }
-                if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
-                    grid[toRow][toCol] = piece;
-                    grid[fromRow][fromCol] = null;
-                    return true;
-                }
-            }
-        }
-
-        // Bishop moves
-        if (piece == ReturnPiece.PieceType.WB || piece == ReturnPiece.PieceType.BB) {
-            int rn = toRow - fromRow;
-            int cn = toCol - fromCol;
-
-
-            if (Math.abs(rn) != Math.abs(cn)) {
-                return false;
-            }
-
-
-            int rstep = (toRow > fromRow) ? 1 : -1;
-            int cstep = (toCol > fromCol) ? 1 : -1;
-
-
-            int r = fromRow + rstep;
-            int c = fromCol + cstep;
-            while (r != toRow) {
-                if (grid[r][c] != null) return false;
-                r += rstep;
-                c += cstep;
-            }
-
-
-
-            if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
-                grid[toRow][toCol] = piece;
-                grid[fromRow][fromCol] = null;
-                return true;
-            }
-        }
-
-        //Knight moves
-        if (piece == ReturnPiece.PieceType.WN || piece == ReturnPiece.PieceType.BN) {
-            int rn = toRow - fromRow;
-            int cn = toCol - fromCol;
-
-
-            if (!(Math.abs(rn) == 1 && Math.abs(cn) == 2 || Math.abs(rn) == 2 && Math.abs(cn) == 1)) {
-                return false;
-            }
-
-            if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
-                grid[toRow][toCol] = piece;
-                grid[fromRow][fromCol] = null;
-                return true;
-            }
-        }
-
-        //King moves
-        if (piece == ReturnPiece.PieceType.WK || piece == ReturnPiece.PieceType.BK) {
-            int rn = toRow - fromRow;
-            int cn = toCol - fromCol;
-
-            if (rn == 0 && cn == 0) return false;
-
-            if (!((Math.abs(rn) == 0 || Math.abs(rn) == 1) && 
-                (Math.abs(cn) == 0 || Math.abs(cn) == 1))) {
-                return false;
-            }
-
-
-            if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
-                grid[toRow][toCol] = piece;
-                grid[fromRow][fromCol] = null;
-                return true;
-            }
-        }
-
-        //Queen moves
-        if (piece == ReturnPiece.PieceType.WQ || piece == ReturnPiece.PieceType.BQ) {
-            int rn = toRow - fromRow;
-            int cn = toCol - fromCol;
-
-            if (fromRow == toRow) {
-                int step;
-
-                if (toCol > fromCol) {
-                    step = 1;
-                } else {
-                    step = -1;
-                }
-
-                for (int c = fromCol + step; c != toCol; c += step) {
-                    if (grid[fromRow][c] != null) return false;
-                }
-                if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
-                    grid[toRow][toCol] = piece;
-                    grid[fromRow][fromCol] = null;
-                    return true;
-                }
-            } else if (fromCol == toCol) {
-                int step;
-                if(toRow > fromRow){
-                    step = 1;
-                }
-                else{
-                    step = -1;
-                }
-
-                for (int r = fromRow + step; r != toRow; r += step) {
-                    if (grid[r][fromCol] != null) return false;
-                }
-                if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
-                    grid[toRow][toCol] = piece;
-                    grid[fromRow][fromCol] = null;
-                    return true;
-                }
-            }
-            else{
-                if (Math.abs(rn) != Math.abs(cn)) {
-                    return false;
-                }
-                int rstep = (toRow > fromRow) ? 1 : -1;
-                int cstep = (toCol > fromCol) ? 1 : -1;
-
-
-                int r = fromRow + rstep;
-                int c = fromCol + cstep;
-                while (r != toRow) {
-                    if (grid[r][c] != null) return false;
-                    r += rstep;
-                    c += cstep;
-                }
-
-
-
-                if (grid[toRow][toCol] == null || (grid[toRow][toCol].name().charAt(0) == 'W') != isWhite) {
-                    grid[toRow][toCol] = piece;
-                    grid[fromRow][fromCol] = null;
-                    return true;
-                }
-            }
-     
-        }
-
-        return false;
-      
+    public void setPieceAt(int row, int col, Piece piece) {
+        grid[row][col] = piece;
     }
 
     public ArrayList<ReturnPiece> getPieces() {
         ArrayList<ReturnPiece> list = new ArrayList<>();
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
-                if (grid[r][c] != null) {
+                Piece p = grid[r][c];
+                if (p != null) {
                     ReturnPiece rp = new ReturnPiece();
-                    rp.pieceType = grid[r][c];
+                    rp.pieceType = mapPieceToReturnPiece(p);
                     rp.pieceFile = ReturnPiece.PieceFile.values()[c];
                     rp.pieceRank = 8 - r;
                     list.add(rp);
@@ -376,4 +93,20 @@ public class Board {
         }
         return list;
     }
+
+    private ReturnPiece.PieceType mapPieceToReturnPiece(Piece piece) {
+        if (piece == null) return null;
+
+        boolean isWhite = piece.isWhite();
+        switch (piece.getType()) {
+            case "Pawn":   return isWhite ? ReturnPiece.PieceType.WP : ReturnPiece.PieceType.BP;
+            case "Rook":   return isWhite ? ReturnPiece.PieceType.WR : ReturnPiece.PieceType.BR;
+            case "Knight": return isWhite ? ReturnPiece.PieceType.WN : ReturnPiece.PieceType.BN;
+            case "Bishop": return isWhite ? ReturnPiece.PieceType.WB : ReturnPiece.PieceType.BB;
+            case "Queen":  return isWhite ? ReturnPiece.PieceType.WQ : ReturnPiece.PieceType.BQ;
+            case "King":   return isWhite ? ReturnPiece.PieceType.WK : ReturnPiece.PieceType.BK;
+            default:       return null;
+        }
+    }
+
 }
