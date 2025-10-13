@@ -26,6 +26,8 @@ public abstract class Piece {
 
     //move method, actually moves the piece from one position to another
     public boolean move(Board board, int fromRow, int fromCol, int toRow, int toCol) {
+    if(fromRow==toRow&&fromCol==toCol) return false;
+
     if (canMove(board, fromRow, fromCol, toRow, toCol)) {
             board.setPieceAt(toRow, toCol, this);
             board.setPieceAt(fromRow, fromCol, null);
@@ -33,6 +35,7 @@ public abstract class Piece {
         }
         return false;
     }
+
 
     
 }

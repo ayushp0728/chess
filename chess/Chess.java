@@ -40,12 +40,18 @@ public class Chess {
         }
         
         //if not draw or resign, handle move
+    
         boolean success = board.makeMove(move, currentPlayer);
         result.piecesOnBoard = board.getPieces();
-
+        if(board.gameOver){
+            if(currentPlayer==Player.WHITE) result.message = ReturnPlay.Message.CHECKMATE_BLACK_WINS;
+            else result.message = ReturnPlay.Message.CHECKMATE_WHITE_WINS;
+            return result;
+        }
         if (!success) {
             result.message = ReturnPlay.Message.ILLEGAL_MOVE;
-        } else {
+        } 
+        else {
             result.message = null;
             currentPlayer = (currentPlayer == Player.WHITE) ? Player.BLACK : Player.WHITE;
 

@@ -10,6 +10,9 @@ public class Queen extends Piece {
         int rDiff = toRow - fromRow;
         int cDiff = toCol - fromCol;
 
+
+        
+
         // Horizontal or vertical
         if (fromRow == toRow || fromCol == toCol) {
             int rStep = Integer.compare(toRow, fromRow);

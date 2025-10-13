@@ -10,6 +10,8 @@ public class Pawn extends Piece {
 
     @Override
     public boolean canMove(Board board, int fromRow, int fromCol, int toRow, int toCol) {
+        if(fromRow==toRow&&fromCol==toCol) return false;
+
         int dir = isWhite ? -1 : 1;
         Piece target = board.getPieceAt(toRow, toCol);
 

@@ -5,9 +5,13 @@ import chess.Board;
 public class Rook extends Piece {
     public Rook(boolean isWhite) { super(isWhite, "Rook"); }
 
+    public boolean hasMoved = false;
+
     @Override
     public boolean canMove(Board board, int fromRow, int fromCol, int toRow, int toCol) {
         if (fromRow != toRow && fromCol != toCol) return false;
+
+        if(fromRow==toRow&&fromCol==toCol) return false;
 
         int step = 0;
         if (fromRow == toRow) {
@@ -22,5 +26,9 @@ public class Rook extends Piece {
 
         Piece target = board.getPieceAt(toRow, toCol);
         return target == null || target.isWhite() != isWhite;
+
+        
+
+        
     }
 }
