@@ -1,13 +1,28 @@
-# welcome to chess
+# ♟️ Welcome to Chess
 
-### use this command to compile classes without cluttering chess folder
+This is a fully functional **command-line chess game** written in Java. It supports all standard chess rules — including check, checkmate, castling, en passant, pawn promotion, and resign/draw conditions.
 
+The project is organized using object-oriented programming principles, with a modular structure that separates the logic for the **board**, **pieces**, **players**, and **game flow**.
+
+---
+
+## 🧠 Project Overview
+
+This project was developed as a learning exercise to understand **OOP design**, **game state management**, and **move validation logic**.  
+Each piece (King, Queen, Bishop, Knight, Rook, Pawn) is implemented as a class that extends a common `Piece` superclass, allowing polymorphic move validation.
+
+The `Board` class tracks the positions of all pieces, while the `Chess` and `PlayChess` classes handle gameplay control, move parsing, and user interaction.
+
+---
+
+## ⚙️ How to Compile
+
+Use the following command to compile all `.java` files while keeping your source folder clean.  
+This will place all compiled `.class` files into a `bin` directory:
+
+```bash
 javac -d bin chess/*.java
-
-### use this command to run playchess
-
-java -cp bin chess.PlayChess
-
+```
 
 ## Vedanti changes
 - in Board class, implemented all basic moves for all piece types
