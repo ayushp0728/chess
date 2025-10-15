@@ -37,3 +37,4 @@ javac -d bin chess/*.java
 - implemented draw by:
     - handling the 3rd arg input in Move.java
     - if "draw?" passed as the 3rd arg, handling the draw itself in Chess.play
+- implemented check and checkmate by tracking valid moves against isinCheck, using array of pieces for full vision (not efficient)
